@@ -1,0 +1,40 @@
+import math
+import random
+import numpy
+import scipy as sp
+import matplotlib.pyplot as plt
+X=[]
+Y=[]
+XTEST=[]
+YTEST=[]
+trainnum=100
+for i in range(trainnum):
+	X.append(random.uniform(-1,1))
+	Y.append(math.sin(X[i]))
+	XTEST.append(random.uniform(-1,1))
+	YTEST.append(math.sin(XTEST[i]))
+	#plt.plot(X[trainnum],Y[trainnum],'.')
+def error(f, x, y):  
+	return sp.sum((f(x)-y)**2)
+fp1, residuals, rank, sv, rcond = sp.polyfit(X, Y, 1, full=True) 
+f1 = sp.poly1d(fp1)  
+plt.plot(X,Y,'.')
+plt.show()
+print(error(f1, X, Y))  
+print("Model parameters: %s" % fp1)  
+trainingerrors=[] 
+testerrors=[] 
+for i in range(20):
+	fpi, residuals, rank, sv, rcond = sp.polyfit(X, Y, i, full=True)
+	fi=sp.poly1d(fpi)
+	fx=sp.linspace(-1,1,5)
+	plt.plot(fx, fi(fx), linewidth=10)
+	plt.legend(["d=%i" % i], loc="upper left") 
+	er=error(fi, X, Y)
+	trainingerrors.append(er)
+	err=error(fi,XTEST,YTEST)
+	testerrors.append(err)
+plt.show()
+print trainingerrors
+print testerrors
+

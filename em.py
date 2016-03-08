@@ -1,0 +1,90 @@
+#coding:utf-8
+import math
+import copy
+import numpy as np
+import matplotlib.pyplot as plt
+
+isdebug = True
+def ini_data(Sigma1,Sigma2,Mu1,Mu2,k,N):
+    global X
+    global Mu
+    global E
+    global Sigma
+    global pi
+    pi=[]
+    pi.append(0.5)
+    pi.append(0.5)
+    X = np.zeros((1,N))
+    Mu = []
+    Sigma=[]
+    Sigma.append(10)
+    Sigma.append(10)
+    Mu.append(1)
+    Mu.append(100)
+    E = np.random.random((N,k))
+    for i in xrange(0,N):
+        if np.random.random(1) > 0.5:
+          X[0,i] = np.random.normal()*Sigma1 + Mu1
+        else:
+          X[0,i] = np.random.normal()*Sigma2 + Mu2
+    if isdebug:
+        print X
+def e_step(k,N):
+    global E
+    global Mu
+    global X
+    global Sigma
+    global pi
+    for i in xrange(0,N):
+        Denom = 0
+        for j in xrange(0,k):
+            Denom += pi[j]*math.exp((-1/(2*(float(Sigma[j]**2))))*(float(X[0,i]-Mu[j]))**2)         
+        for j in xrange(0,k):
+            Numer = pi[j]*math.exp((-1/(2*(float(Sigma[j]**2))))*(float(X[0,i]-Mu[j]))**2)
+            E[i,j] = Numer / Denom
+    if isdebug:
+        print E
+def m_step(k,N):
+    global E
+    global X
+    for j in xrange(0,k):
+        Numer = 0
+        mosig=0 
+        Denom = 0
+        for i in xrange(0,N):
+            Numer += E[i,j]*X[0,i]
+            Denom +=E[i,j]
+            mosig +=E[i,j]*(((X[0,i])-Mu[j])**2)
+        Mu[j] = Numer / Denom
+        Sigma[j]=(mosig/Denom)**0.5
+        pi[j]=Denom/N
+def run(Sigma1,Sigma2,Mu1,Mu2,k,N,iter_num,Epsilon):
+    ini_data(Sigma1,Sigma2,Mu1,Mu2,k,N)
+    print  Mu,Sigma,pi
+    old=objec(k,N)
+    for i in range(iter_num):
+        e_step(k,N)
+        m_step(k,N)
+        print i,Mu,Sigma,pi
+        new=objec(k,N)
+        if abs(new-old)<2.4e-1000:
+                 break
+
+def objec(k,N):
+    global Sigma
+    global Mu
+    global E
+    global pi
+    resul=1.0
+    for i in xrange(0,N):
+        num1=0.0
+        for j in xrange(0,k):
+            num1=num1+pi[j]*E[i,j]
+        resul=resul*num1
+    print resul
+    return resul
+
+if __name__ == '__main__':
+     run(15,8,20,70,2,1000,10,0.0001)
+     plt.hist(X[0,:],50)
+     plt.show()

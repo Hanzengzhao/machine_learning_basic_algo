@@ -1,0 +1,9 @@
+W=[1,2,3,4]
+global A
+A=W
+
+print A
+def ni(A):
+	global A
+	A[1]=20
+ni(A)

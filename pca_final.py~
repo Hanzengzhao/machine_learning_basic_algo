@@ -1,0 +1,28 @@
+from numpy import *  
+#coding: utf-8      
+def pca(dataMat, topNfeat=5):  
+        meanVals = mean_value(dataMat) 
+  
+        meanRemoved = dataMat - meanVals 
+        stded = meanRemoved / std(dataMat,axis=0)  
+        covMat = cov(stded, rowvar=0) #求协方差方阵  
+        eigVals, eigVects = linalg.eig(mat(covMat)) 
+        eigValInd = argsort(eigVals)  #对特征值进行排序  
+        eigValInd = eigValInd[-topNfeat:]    
+        redEigVects = eigVects[:, eigValInd]       # 除去不需要的特征向量  
+        lowDDataMat = stded * redEigVects    #求新的数据矩阵  
+        return lowDDataMat
+def mean_value(MAT):
+        mean_va=random.random(size=(1,8))
+	for j in range(MAT.shape[1]):
+		sum0=0
+		for i in range(MAT.shape[0]):
+			sum0=sum0+MAT[i][j]
+		mean_va[0,j]=sum0
+	return mean_va
+	
+randArray = random.random(size=(10,8))
+a=pca(randArray)
+print a
+
+
